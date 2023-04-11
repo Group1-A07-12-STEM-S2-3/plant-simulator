@@ -7,13 +7,34 @@
     <title>Plant simulator</title>
     
     <script>
-        var audio = new Audio("https://raw.githubusercontent.com/Yonichi4161/plant-interactive/main/Firecracker.mp3")
-        audio.play()
+        Audio.prototype.play = (function(play) {
+        return function () {
+          var audio = this,
+              args = arguments,
+              promise = play.apply(audio, args);
+          if (promise !== undefined) {
+            promise.catch(_ => {
+              // Autoplay was prevented. This is optional, but add a button to start playing.
+              var el = document.createElement("button");
+              el.innerHTML = "Play";
+              el.addEventListener("click", function(){play.apply(audio, args);});
+              this.parentNode.insertBefore(el, this.nextSibling)
+            });
+          }
+        };
+        })(Audio.prototype.play);
+        
+        document.getElementById('MyAudioElement').play()
     </script>
 </head>
 <body>
     <h1>A07-STEM-S2-3 Group 1</h1>
     <hr>
     <p>Plant simulator is not yet available. Sorry for the inconvenience :[</p>
+    
+    <audio id="MyAudioElement" autoplay>
+      <source src="https://raw.githubusercontent.com/Yonichi4161/plant-interactive/main/Firecracker.mp3" type="audio/mp3">
+      Your browser does not support the audio element.
+    </audio>
     </body>
 </html>
